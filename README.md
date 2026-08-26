@@ -1,3 +1,7 @@
+# skala-agile-msa
+
+SKALA Agile, MSA 강의 실습
+
 # The following practice code is intended for educational purposes only. For contact :  audit@korea.ac.kr, Sungryel Lim Ph.D
 
 # This practice code is not a completed commercial version but has been developed for educational purposes; supplementation is required depending on the deployment objective for use as a commercial service.
