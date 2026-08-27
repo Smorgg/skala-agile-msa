@@ -4,10 +4,10 @@
     <div class="page-layout">
       <aside class="sidebar">
         <div class="sidebar-section">
-          <div class="sidebar-label">메뉴</div>
+          <div class="sidebar-label">{{ t('menu') }}</div>
 
           <router-link to="/courses" class="sidebar-item">
-            <span class="si-icon">👨‍💼</span> 서비스 목록
+            <span class="si-icon">👨‍💼</span> {{ t('serviceList') }}
           </router-link>
 
           <router-link
@@ -15,27 +15,23 @@
             to="/enrollments"
             class="sidebar-item active"
           >
-            <span class="si-icon">✅</span> 내 서비스 목록
-          </router-link>
-
-          <router-link to="/mypage" class="sidebar-item">
-            <span class="si-icon">⭐</span> 마이페이지
+            <span class="si-icon">✅</span> {{ t('myServiceList') }}
           </router-link>
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">계정</div>
+          <div class="sidebar-label">{{ t('account') }}</div>
           <router-link to="/mypage" class="sidebar-item">
-            <span class="si-icon">👤</span> 마이페이지
+            <span class="si-icon">👤</span> {{ t('myPage') }}
           </router-link>
           <button class="sidebar-item sidebar-btn" @click="handleLogout">
-            <span class="si-icon">🚪</span> 로그아웃
+            <span class="si-icon">🚪</span> {{ t('logout') }}
           </button>
         </div>
       </aside>
 
       <main class="main-content">
-        <h1 class="page-title">내 서비스 목록</h1>
+        <h1 class="page-title">{{ t('myServiceList') }}</h1>
 
         <div v-if="loading" class="loading-center">
           <div class="spinner"></div>
@@ -44,15 +40,21 @@
         <div v-else-if="enrollments.length" class="enrollment-list fade-in">
           <div v-for="item in enrollments" :key="item.id" class="enrollment-card">
             <div class="enroll-thumb" :class="getThumbBg(item.course?.category)">
-              <img :src="getThumbSrc(item.course)" :alt="item.course?.title" />
+              <img
+                v-if="getThumbSrc(item.course)"
+                :src="getThumbSrc(item.course)"
+                :alt="item.course?.title"
+              />
+              <span v-else class="thumb-placeholder">
+                {{ getDisplayCategory(item.course?.category).charAt(0) }}
+              </span>
             </div>
 
             <div class="enroll-info">
               <span class="badge" :class="getBadge(item.course?.category)">
-                {{ item.course?.category }}
+                {{ translateCategory(getDisplayCategory(item.course?.category)) }}
               </span>
               <h3 class="enroll-title">{{ item.course?.title }}</h3>
-              <p class="enroll-instructor">강사: {{ item.course?.instructorName }}</p>
             </div>
 
             <div class="enroll-status">
@@ -62,10 +64,10 @@
                   item.status === 'ACTIVE' ? 'status-active' : 'status-pending'
                 ]"
               >
-                {{ item.status === 'ACTIVE' ? '수강 중' : '대기 중' }}
+                {{ item.status === 'ACTIVE' ? t('active') : t('pending') }}
               </span>
               <router-link :to="`/courses/${item.courseId}`" class="btn btn-ghost btn-sm">
-                강의 보기
+                {{ t('viewCourse') }}
               </router-link>
             </div>
           </div>
@@ -73,9 +75,9 @@
 
         <div v-else class="empty-state">
           <p class="empty-icon">📭</p>
-          <p>이용 중인 서비스가 없습니다.</p>
+          <p>{{ t('noActiveServices') }}</p>
           <router-link to="/courses" class="btn btn-primary" style="margin-top:16px;">
-            서비스 둘러보기
+            {{ t('browseServices') }}
           </router-link>
         </div>
       </main>
@@ -89,9 +91,13 @@ import { useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import { enrollmentApi } from '@/api/enrollment.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useCourseStore } from '@/store/course.js'
+import { useI18n } from '@/i18n/index.js'
 
 const router = useRouter()
 const auth = useAuthStore()
+const courseStore = useCourseStore()
+const { t } = useI18n()
 
 const enrollments = ref([])
 const loading = ref(true)
@@ -99,29 +105,40 @@ const loading = ref(true)
 const isInstructor = computed(() => auth.user?.role === 'INSTRUCTOR')
 
 const categoryConfig = {
-  '의료': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'spring_boot' },
-  '금융': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'vue_js' },
-  '행정': { bg: 'thumb-blue', badge: 'badge-blue', thumb: 'kubernetes' },
-  '학업': { bg: 'thumb-purple', badge: 'badge-purple', thumb: 'python' },
-  '생활': { bg: 'thumb-pink', badge: 'badge-pink', thumb: 'generative_ai' },
+  '의료': { bg: 'thumb-teal', badge: 'badge-teal' },
+  '금융': { bg: 'thumb-amber', badge: 'badge-amber' },
+  '행정': { bg: 'thumb-blue', badge: 'badge-blue' },
+  // 신청 목록에서도 법률·안전 서비스의 빨강 계열을 동일하게 유지한다.
+  '법률·안전': { bg: 'thumb-red', badge: 'badge-red' },
+  '학업': { bg: 'thumb-purple', badge: 'badge-purple' },
+  '생활': { bg: 'thumb-pink', badge: 'badge-pink' },
+}
+
+const categoryTranslationKeys = {
+  '의료': 'healthcare', '금융': 'finance', '행정': 'admin',
+  '법률·안전': 'security', SECURITY: 'security', '학업': 'academic', '생활': 'life'
+}
+
+function translateCategory(category) {
+  return t(categoryTranslationKeys[category] || category || '-')
+}
+
+// API enum(HEALTHCARE 등)을 화면용 한글 카테고리로 바꿔 색상과 번역 기준을 통일한다.
+function getDisplayCategory(category) {
+  return courseStore.normalizeCategory(category)
 }
 
 function getThumbBg(cat) {
-  return categoryConfig[cat]?.bg || 'thumb-gray'
+  return categoryConfig[getDisplayCategory(cat)]?.bg || 'thumb-gray'
 }
 
 function getBadge(cat) {
-  return categoryConfig[cat]?.badge || 'badge-gray'
+  return categoryConfig[getDisplayCategory(cat)]?.badge || 'badge-gray'
 }
 
 function getThumbSrc(course) {
-  const key = course?.thumbnail || categoryConfig[course?.category]?.thumb
-  if (!key) return ''
-  try {
-    return new URL(`../assets/images/courses/${key}.png`, import.meta.url).href
-  } catch {
-    return ''
-  }
+  // 서비스 목록과 같은 중앙 매핑을 사용해 카테고리별 서비스 이미지를 표시한다.
+  return courseStore.getThumbnail(course)
 }
 
 function handleLogout() {
@@ -272,16 +289,24 @@ onMounted(async () => {
 .enroll-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 8px;
+  object-fit: cover;
+  display: block;
 }
 
 .thumb-teal {
   background: #E1F5EE;
 }
 
+.thumb-amber {
+  background: #FAEEDA;
+}
+
 .thumb-blue {
   background: #E6F1FB;
+}
+
+.thumb-red {
+  background: #FCEBEB;
 }
 
 .thumb-purple {
@@ -303,14 +328,21 @@ onMounted(async () => {
   gap: 4px;
 }
 
+/* 카테고리 뱃지는 텍스트 길이만큼만 차지하는 기존 서비스 카드 크기를 유지한다. */
+.enroll-info > .badge {
+  align-self: flex-start;
+  width: fit-content;
+}
+
+.thumb-placeholder {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
 .enroll-title {
   font-size: 15px;
   font-weight: 600;
-}
-
-.enroll-instructor {
-  font-size: 13px;
-  color: var(--color-text-secondary);
 }
 
 .enroll-status {

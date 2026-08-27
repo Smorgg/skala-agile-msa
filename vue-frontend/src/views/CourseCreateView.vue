@@ -6,14 +6,14 @@
       <!-- 사이드바 -->
       <aside class="sidebar">
         <div class="sidebar-section">
-          <div class="sidebar-label">메뉴</div>
+          <div class="sidebar-label">{{ t('menu') }}</div>
 
           <router-link
             to="/courses"
             class="sidebar-item"
             :class="{ active: $route.path === '/courses' }"
           >
-            <span class="si-icon">📚</span> 서비스 목록
+            <span class="si-icon">📚</span> {{ t('serviceList') }}
           </router-link>
 
           <router-link
@@ -21,7 +21,7 @@
             class="sidebar-item"
             :class="{ active: $route.path === '/courses/new' }"
           >
-            <span class="si-icon">✍️</span> 서비스 등록
+            <span class="si-icon">✍️</span> {{ t('serviceCreate') }}
           </router-link>
 
           <!-- <router-link to="/mypage" class="sidebar-item">
@@ -30,12 +30,12 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">계정</div>
+          <div class="sidebar-label">{{ t('account') }}</div>
           <router-link to="/mypage" class="sidebar-item">
-            <span class="si-icon">👤</span> 마이페이지
+            <span class="si-icon">👤</span> {{ t('myPage') }}
           </router-link>
           <button class="sidebar-item sidebar-btn" @click="handleLogout">
-            <span class="si-icon">🚪</span> 로그아웃
+            <span class="si-icon">🚪</span> {{ t('logout') }}
           </button>
         </div>
       </aside>
@@ -44,41 +44,41 @@
       <main class="main-content">
         <div class="content-header">
           <div>
-            <h1 class="page-title">서비스 등록</h1>
-            <p class="page-subtitle">학교 관리자 계정으로 새로운 서비스을 등록합니다.</p>
+            <h1 class="page-title">{{ t('serviceCreate') }}</h1>
+            <p class="page-subtitle">{{ t('serviceCreateDescription') }}</p>
           </div>
         </div>
 
         <div class="form-card">
           <form class="course-form" @submit.prevent="handleSubmit">
             <div class="form-group">
-              <label class="form-label" for="title">서비스명</label>
+              <label class="form-label" for="title">{{ t('serviceName') }}</label>
               <input
                 id="title"
                 v-model.trim="form.title"
                 type="text"
                 class="form-input"
-                placeholder="예: 외국인 유학생 계좌 개설 가이드"
+                :placeholder="t('serviceNamePlaceholder')"
                 maxlength="100"
               />
             </div>
 
             <div class="form-group">
-              <label class="form-label" for="description">서비스 설명</label>
+              <label class="form-label" for="description">{{ t('serviceDescription') }}</label>
               <textarea
                 id="description"
                 v-model.trim="form.description"
                 class="form-textarea"
                 rows="6"
-                placeholder="서비스 소개, 신청 대상, 진행 방식 등을 입력해 주세요."
+                :placeholder="t('serviceDescriptionPlaceholder')"
               ></textarea>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label class="form-label" for="category">카테고리</label>
+                <label class="form-label" for="category">{{ t('category') }}</label>
                 <select id="category" v-model="form.category" class="form-select">
-                  <option disabled value="">영역을 선택하세요</option>
+                  <option disabled value="">{{ t('selectCategory') }}</option>
                   <option
                     v-for="option in categoryOptions"
                     :key="option.value"
@@ -117,12 +117,12 @@
 
             <div class="form-actions">
               <router-link to="/courses" class="btn btn-ghost">
-                취소
+                {{ t('cancel') }}
               </router-link>
 
               <button type="submit" class="btn btn-primary" :disabled="submitting">
-                <span v-if="submitting">등록 중...</span>
-                <span v-else>서비스 등록</span>
+                <span v-if="submitting">{{ t('creating') }}</span>
+                <span v-else>{{ t('serviceCreate') }}</span>
               </button>
             </div>
           </form>
@@ -133,14 +133,16 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import AppHeader from '@/components/AppHeader.vue'
 import { courseApi } from '@/api/course.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useI18n } from '@/i18n/index.js'
 
 const router = useRouter()
 const auth = useAuthStore()
+const { t } = useI18n()
 
 const form = reactive({
   title: '',
@@ -154,13 +156,14 @@ const validationError = ref('')
 const submitError = ref('')
 const submitSuccess = ref('')
 
-const categoryOptions = [
-  { label: '의료', value: 'HEALTHCARE' },
-  { label: '금융', value: 'FINANCE' },
-  { label: '학업', value: 'ACADEMIC' },
-  { label: '생활', value: 'LIFE' },
-  { label: '행정', value: 'ADMIN' }
-]
+const categoryOptions = computed(() => [
+  { label: t('healthcare'), value: 'HEALTHCARE' },
+  { label: t('finance'), value: 'FINANCE' },
+  { label: t('academic'), value: 'ACADEMIC' },
+  { label: t('life'), value: 'LIFE' },
+  { label: t('admin'), value: 'ADMIN' },
+  { label: t('security'), value: 'SECURITY' }
+])
 
 function handleLogout() {
   auth.logout()
@@ -171,22 +174,22 @@ function validateForm() {
   validationError.value = ''
 
   if (!auth.user || auth.user.role !== 'INSTRUCTOR') {
-    validationError.value = '학교 관리자 계정만 서비스을 등록할 수 있습니다.'
+    validationError.value = t('adminOnlyCreate')
     return false
   }
 
   if (!form.title) {
-    validationError.value = '서비스명을 입력해 주세요.'
+    validationError.value = t('enterServiceName')
     return false
   }
 
   if (!form.description) {
-    validationError.value = '서비스 설명을 입력해 주세요.'
+    validationError.value = t('enterServiceDescription')
     return false
   }
 
   if (!form.category) {
-    validationError.value = '영역을 선택해 주세요.'
+    validationError.value = t('chooseCategory')
     return false
   }
 
@@ -223,7 +226,7 @@ async function handleSubmit() {
     const res = await courseApi.create(payload)
     console.log('[CourseCreate] create response =', res.data)
 
-    submitSuccess.value = '서비스이 성공적으로 등록되었습니다.'
+    submitSuccess.value = t('serviceCreateSuccess')
 
     const createdCourseId =
       res.data?.data?.id ??
@@ -242,7 +245,7 @@ async function handleSubmit() {
     console.error('[CourseCreate] create failed:', error)
     submitError.value =
       error.response?.data?.message ||
-      '서비스 등록에 실패했습니다.'
+      t('serviceCreateFailed')
   } finally {
     submitting.value = false
   }

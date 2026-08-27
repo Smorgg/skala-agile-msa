@@ -7,34 +7,34 @@
         <div class="detail-hero-inner">
           <!-- 좌측 상세 정보 -->
           <div class="detail-info fade-in-up">
-            <span class="badge" :class="badgeClass">{{ displayCategory }}</span>
             <h1 class="detail-title">{{ course.title }}</h1>
+            <span class="badge" :class="badgeClass">{{ displayCategory }}</span>
             <p class="detail-desc">
-              {{ course.description || '학교 관리자가 직접 준비한 프로그램으로 필요한 지원을 받아보세요.' }}
+              {{ course.description || t('defaultServiceDescription') }}
             </p>
 
             <div class="detail-meta">
-              <span>담당 부서: {{ displayInstructorName }}</span>
-              <span>신청자: {{ displayEnrollmentCount }}명</span>
+              <span>{{ t('department') }}: {{ displayInstructorName }}</span>
+              <span>{{ t('applicants') }}: {{ t('peopleUnit', { count: displayEnrollmentCount }) }}</span>
             </div>
           </div>
 
           <!-- 우측 결제/신청 카드 -->
           <div class="enroll-card fade-in">
             <div class="enroll-thumb" :class="thumbBg">
-              <span class="thumb-emoji">{{ thumbIcon }}</span>
+              <!-- 카테고리별 서비스 썸네일을 표시하고 이미지가 없을 때만 아이콘을 사용한다. -->
+              <img v-if="thumbSrc" :src="thumbSrc" :alt="course.title" class="thumb-img" />
+              <span v-else class="thumb-emoji">{{ thumbIcon }}</span>
             </div>
 
             <div class="enroll-body">
-              <div class="enroll-price">₩{{ displayPrice }}</div>
-
               <button
                 class="btn btn-primary btn-full"
                 @click="handlePrimaryAction"
                 :disabled="buttonDisabled"
                 :class="{ 'btn-disabled': buttonDisabled }"
               >
-                <span v-if="enrolling">처리 중...</span>
+                <span v-if="enrolling">{{ t('processing') }}</span>
                 <span v-else>{{ buttonLabel }}</span>
               </button>
 
@@ -45,9 +45,9 @@
               </p>
 
               <ul class="enroll-info-list">
-                <li>✅ 즉시 신청 가능</li>
-                <li>✅ 신청 내역 상시 확인</li>
-                <li>✅ 담당 부서 안내 제공</li>
+                <li>{{ t('availableImmediately') }}</li>
+                <li>{{ t('applicationHistory') }}</li>
+                <li>{{ t('departmentGuide') }}</li>
               </ul>
             </div>
           </div>
@@ -60,7 +60,7 @@
     </div>
 
     <div v-else class="loading-center">
-      <p class="empty-text">서비스 정보를 불러오지 못했습니다.</p>
+      <p class="empty-text">{{ t('serviceLoadFailed') }}</p>
     </div>
   </div>
 </template>
@@ -72,11 +72,13 @@ import AppHeader from '@/components/AppHeader.vue'
 import { useCourseStore } from '@/store/course.js'
 import { enrollmentApi } from '@/api/enrollment.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useI18n } from '@/i18n/index.js'
 
 const route = useRoute()
 const router = useRouter()
 const courseStore = useCourseStore()
 const auth = useAuthStore()
+const { t } = useI18n()
 
 const enrolling = ref(false)
 const enrollError = ref('')
@@ -87,18 +89,31 @@ const loading = computed(() => courseStore.loading)
 const isInstructor = computed(() => auth.user?.role === 'INSTRUCTOR')
 
 const categoryConfig = {
-  '의료': { badge: 'badge-pink', bg: 'thumb-pink', icon: '🏥' },
-  '금융': { badge: 'badge-blue', bg: 'thumb-blue', icon: '💰' },
-  '학업': { badge: 'badge-teal', bg: 'thumb-teal', icon: '📖' },
-  '생활': { badge: 'badge-purple', bg: 'thumb-purple', icon: '🏠' },
-  '행정': { badge: 'badge-gray', bg: 'thumb-gray', icon: '📋' },
+  // 서비스 목록 카드와 동일한 카테고리 색상 체계를 사용한다.
+  '의료': { badge: 'badge-teal', bg: 'thumb-teal', icon: '🏥' },
+  '금융': { badge: 'badge-amber', bg: 'thumb-amber', icon: '💰' },
+  '행정': { badge: 'badge-blue', bg: 'thumb-blue', icon: '📋' },
+  // 법률·안전 카테고리는 경고 의미가 분명한 빨강 계열과 저울 아이콘을 사용한다.
+  '법률·안전': { badge: 'badge-red', bg: 'thumb-red', icon: '⚖️' },
+  SECURITY: { badge: 'badge-red', bg: 'thumb-red', icon: '⚖️' },
+  '학업': { badge: 'badge-purple', bg: 'thumb-purple', icon: '📖' },
+  '생활': { badge: 'badge-pink', bg: 'thumb-pink', icon: '🏠' },
 }
 
 const config = computed(() => categoryConfig[course.value?.category] || {})
 const badgeClass = computed(() => config.value.badge || 'badge-gray')
 const thumbBg = computed(() => config.value.bg || 'thumb-gray')
+const thumbSrc = computed(() => courseStore.getThumbnail(course.value))
 
-const displayCategory = computed(() => course.value?.category || '-')
+const categoryTranslationKeys = {
+  '의료': 'healthcare', '금융': 'finance', '행정': 'admin',
+  '법률·안전': 'security', SECURITY: 'security', '학업': 'academic', '생활': 'life'
+}
+
+const displayCategory = computed(() => {
+  const category = course.value?.category
+  return category ? t(categoryTranslationKeys[category] || category) : '-'
+})
 
 const displayInstructorName = computed(() => {
   return (
@@ -107,7 +122,7 @@ const displayInstructorName = computed(() => {
     course.value?.instructor?.name ||
     course.value?.instructor_name ||
     course.value?.ownerName ||
-    '담당 부서 정보 없음'
+    t('departmentUnknown')
   )
 })
 
@@ -120,18 +135,13 @@ const displayEnrollmentCount = computed(() => {
   return Number.isNaN(value) ? 0 : value.toLocaleString()
 })
 
-const displayPrice = computed(() => {
-  const value = Number(course.value?.price ?? 0)
-  return Number.isNaN(value) ? '0' : value.toLocaleString()
-})
-
 const thumbIcon = computed(() => config.value.icon || '📌')
 
 const buttonLabel = computed(() => {
-  if (isInstructor.value) return '운영자 계정은 신청 불가'
-  if (enrollmentStatus.value === 'ACTIVE') return '내 신청 목록으로 이동'
-  if (enrollmentStatus.value === 'PENDING') return '신청 완료 · 처리 중'
-  return '신청하기'
+  if (isInstructor.value) return t('operatorCannotApply')
+  if (enrollmentStatus.value === 'ACTIVE') return t('goToApplications')
+  if (enrollmentStatus.value === 'PENDING') return t('applicationPending')
+  return t('apply')
 })
 
 const buttonDisabled = computed(() => {
@@ -143,18 +153,18 @@ const buttonDisabled = computed(() => {
 
 const helperText = computed(() => {
   if (isInstructor.value) {
-    return '운영자 계정은 본인이 등록한 프로그램을 신청할 수 없습니다.'
+    return t('operatorHelp')
   }
 
   if (enrollmentStatus.value === 'ACTIVE') {
-    return '이미 신청한 프로그램입니다. 내 신청 목록에서 바로 확인할 수 있습니다.'
+    return t('activeHelp')
   }
 
   if (enrollmentStatus.value === 'PENDING') {
-    return '신청이 접수되었습니다. 처리 상태가 반영되면 내 신청 목록에서 확인할 수 있습니다.'
+    return t('pendingHelp')
   }
 
-  return '신청을 진행하면 (유료 프로그램의 경우 결제와 함께) 접수가 완료됩니다.'
+  return t('applyHelp')
 })
 
 async function loadEnrollmentStatus() {
@@ -191,12 +201,12 @@ async function handlePrimaryAction() {
   enrollError.value = ''
 
   if (!course.value?.id) {
-    enrollError.value = '프로그램 정보가 올바르지 않습니다.'
+    enrollError.value = t('invalidService')
     return
   }
 
   if (isInstructor.value) {
-    enrollError.value = '운영자 계정은 본인이 등록한 프로그램을 신청할 수 없습니다.'
+    enrollError.value = t('operatorHelp')
     return
   }
 
@@ -216,7 +226,7 @@ async function handlePrimaryAction() {
     enrollmentStatus.value = 'PENDING'
   } catch (e) {
     console.error('[CourseDetail] enroll failed:', e)
-    enrollError.value = e.response?.data?.message || '프로그램 신청에 실패했습니다.'
+    enrollError.value = e.response?.data?.message || t('applicationFailed')
   } finally {
     enrolling.value = false
   }
@@ -274,6 +284,12 @@ watch(
   line-height: 1.3;
 }
 
+/* 제목 아래의 카테고리 뱃지는 텍스트 너비만 차지하도록 한다. */
+.detail-info > .badge {
+  align-self: flex-start;
+  width: fit-content;
+}
+
 .detail-desc {
   font-size: 15px;
   color: var(--color-text-secondary);
@@ -301,6 +317,14 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .thumb-emoji {
@@ -309,6 +333,8 @@ watch(
 
 .thumb-teal { background: #E1F5EE; }
 .thumb-blue { background: #E6F1FB; }
+.thumb-amber { background: #FAEEDA; }
+.thumb-red { background: #FCEBEB; }
 .thumb-purple { background: #EEEDFE; }
 .thumb-pink { background: #FBEAF0; }
 .thumb-gray { background: #F1EFE8; }
@@ -318,12 +344,6 @@ watch(
   display: flex;
   flex-direction: column;
   gap: 14px;
-}
-
-.enroll-price {
-  font-size: 26px;
-  font-weight: 700;
-  color: var(--color-primary);
 }
 
 .btn-full {

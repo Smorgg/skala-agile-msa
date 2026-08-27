@@ -1,5 +1,6 @@
 <template>
   <div class="login-page">
+    <div class="login-language"><LanguageSwitcher /></div>
     <div class="login-layout">
       <!-- 좌측 브랜딩 -->
       <div class="login-left">
@@ -8,8 +9,8 @@
           <span class="brand-name">LearnNexus</span>
         </div>
         <div class="brand-content">
-          <h2>다시 만나서<br>반갑습니다</h2>
-          <p>로그인하고 나만의 여정을 이어가세요.</p>
+          <h2>{{ t('welcomeBackLine1') }}<br>{{ t('welcomeBackLine2') }}</h2>
+          <p>{{ t('continueJourney') }}</p>
           <ul class="feature-list">
             <li v-for="f in features" :key="f">
               <span class="dot"></span>{{ f }}
@@ -21,52 +22,52 @@
       <!-- 우측 -->
       <div class="login-right">
         <div class="login-box fade-in-up">
-          <router-link to="/" class="back-link">← 홈으로</router-link>
+          <router-link to="/" class="back-link">{{ t('backHome') }}</router-link>
 
           <!-- 로그인 영역 -->
           <div v-if="!showRegister" class="section">
-            <h3 class="section-title">로그인</h3>
-            <p class="section-desc">LearnNexus 계정으로 로그인합니다.</p>
-            <button class="btn btn-primary btn-full" @click="handleOAuth">로그인</button>
+            <h3 class="section-title">{{ t('login') }}</h3>
+            <p class="section-desc">{{ t('loginDescription') }}</p>
+            <button class="btn btn-primary btn-full" @click="handleOAuth">{{ t('login') }}</button>
             <div class="switch-link">
-              계정이 없으신가요?
-              <button class="text-btn" @click="showRegister = true">회원가입</button>
+              {{ t('noAccount') }}
+              <button class="text-btn" @click="showRegister = true">{{ t('register') }}</button>
             </div>
           </div>
 
           <!-- 회원가입 영역 -->
           <div v-else class="section">
-            <h3 class="section-title">회원가입</h3>
+            <h3 class="section-title">{{ t('register') }}</h3>
             <form @submit.prevent="handleRegister" class="form">
               <div class="form-group">
-                <label class="form-label">이름</label>
-                <input v-model="registerForm.name" type="text" class="form-input" placeholder="홍길동" required />
+                <label class="form-label">{{ t('name') }}</label>
+                <input v-model="registerForm.name" type="text" class="form-input" :placeholder="t('namePlaceholder')" required />
               </div>
               <div class="form-group">
-                <label class="form-label">이메일</label>
+                <label class="form-label">{{ t('email') }}</label>
                 <input v-model="registerForm.email" type="email" class="form-input" placeholder="user@example.com" required />
               </div>
               <div class="form-group">
-                <label class="form-label">비밀번호</label>
-                <input v-model="registerForm.password" type="password" class="form-input" placeholder="8자 이상" required />
+                <label class="form-label">{{ t('password') }}</label>
+                <input v-model="registerForm.password" type="password" class="form-input" :placeholder="t('passwordPlaceholder')" required />
               </div>
               <div class="form-group">
-                <label class="form-label">역할</label>
+                <label class="form-label">{{ t('role') }}</label>
                 <select v-model="registerForm.role" class="form-input">
-                  <option value="STUDENT">학생</option>
-                  <option value="INSTRUCTOR">관리자</option>
+                  <option value="STUDENT">{{ t('student') }}</option>
+                  <option value="INSTRUCTOR">{{ t('administrator') }}</option>
                 </select>
               </div>
               <div v-if="error" class="error-msg">{{ error }}</div>
               <div v-if="success" class="success-msg">{{ success }}</div>
               <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
-                <span v-if="loading">가입 중...</span>
-                <span v-else>회원가입</span>
+                <span v-if="loading">{{ t('registering') }}</span>
+                <span v-else>{{ t('register') }}</span>
               </button>
             </form>
             <div class="switch-link">
-              이미 계정이 있으신가요?
-              <button class="text-btn" @click="showRegister = false">로그인</button>
+              {{ t('haveAccount') }}
+              <button class="text-btn" @click="showRegister = false">{{ t('login') }}</button>
             </div>
           </div>
 
@@ -77,11 +78,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '@/store/auth.js'
 import { authApi } from '@/api/auth.js'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import { useI18n } from '@/i18n/index.js'
 
 const auth = useAuthStore()
+const { t } = useI18n()
 
 const showRegister = ref(false)
 const loading = ref(false)
@@ -90,7 +94,7 @@ const success = ref('')
 
 const registerForm = ref({ name: '', email: '', password: '', role: 'STUDENT' })
 
-const features = ['유학생 보조 서비스', '맞춤 서비스 추천', '이용중인 서비스 관리']
+const features = computed(() => [t('assistStudents'), t('featureRecommendTitle'), t('manageServices')])
 
 function handleOAuth() {
   auth.redirectToLogin()
@@ -102,14 +106,14 @@ async function handleRegister() {
   loading.value = true
   try {
     await authApi.register(registerForm.value)
-    success.value = '회원가입 완료! 로그인 페이지로 이동합니다.'
+    success.value = t('registerSuccess')
     registerForm.value = { name: '', email: '', password: '', role: 'STUDENT' }
     setTimeout(() => {
       showRegister.value = false
       success.value = ''
     }, 2000)
   } catch (e) {
-    error.value = e.response?.data?.message || '회원가입에 실패했습니다.'
+    error.value = e.response?.data?.message || t('registerFailed')
   } finally {
     loading.value = false
   }
@@ -121,6 +125,12 @@ async function handleRegister() {
   min-height: 100vh;
   display: flex;
   align-items: stretch;
+}
+.login-language {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
 }
 .login-layout {
   display: grid;

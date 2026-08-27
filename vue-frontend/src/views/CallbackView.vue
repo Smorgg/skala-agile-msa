@@ -11,12 +11,14 @@
 import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/store/auth.js'
+import { useI18n } from '@/i18n/index.js'
 
 const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
+const { t } = useI18n()
 
-const message = ref('로그인 처리 중...')
+const message = ref(t('loginProcessing'))
 const processing = ref(false)
 
 onMounted(async () => {
@@ -32,25 +34,25 @@ onMounted(async () => {
       error,
       errorDescription
     })
-    message.value = '로그인에 실패했습니다. 다시 시도해주세요.'
+    message.value = t('loginFailed')
     router.replace('/login')
     return
   }
 
   if (!code) {
     console.error('OAuth callback error: code 파라미터가 없습니다.')
-    message.value = '잘못된 로그인 요청입니다.'
+    message.value = t('invalidLoginRequest')
     router.replace('/login')
     return
   }
 
   try {
     await auth.handleCallback(code)
-    message.value = '로그인 완료! 이동 중입니다...'
+    message.value = t('loginComplete')
     router.replace('/courses')
   } catch (err) {
     console.error('OAuth callback 처리 실패:', err)
-    message.value = '로그인 처리에 실패했습니다.'
+    message.value = t('loginProcessFailed')
     router.replace('/login')
   }
 })

@@ -5,14 +5,14 @@
       <!-- 사이드바 -->
       <aside class="sidebar">
         <div class="sidebar-section">
-          <div class="sidebar-label">메뉴</div>
+          <div class="sidebar-label">{{ t('menu') }}</div>
 
           <router-link
             to="/courses"
             class="sidebar-item"
             :class="{ active: $route.path === '/courses' }"
           >
-            <span class="si-icon">📚</span> 서비스 목록
+            <span class="si-icon">👨‍💼</span> {{ t('serviceList') }}
           </router-link>
 
           <router-link
@@ -20,7 +20,7 @@
             to="/enrollments"
             class="sidebar-item"
           >
-            <span class="si-icon">✅</span> 내 신청 목록
+            <span class="si-icon">✅</span> {{ t('myApplications') }}
           </router-link>
 
           <!-- <router-link
@@ -32,12 +32,12 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">계정</div>
+          <div class="sidebar-label">{{ t('account') }}</div>
           <router-link to="/mypage" class="sidebar-item">
-            <span class="si-icon">👤</span> 마이페이지
+            <span class="si-icon">👤</span> {{ t('myPage') }}
           </router-link>
           <button class="sidebar-item sidebar-btn" @click="handleLogout">
-            <span class="si-icon">🚪</span> 로그아웃
+            <span class="si-icon">🚪</span> {{ t('logout') }}
           </button>
         </div>
       </aside>
@@ -46,9 +46,9 @@
       <main class="main-content">
         <div class="content-header">
           <div>
-            <h1 class="page-title">서비스 목록</h1>
+            <h1 class="page-title">{{ t('serviceList') }}</h1>
             <p class="page-subtitle" v-if="isInstructor">
-              학교 관리자 계정으로 등록된 서비스을 확인하고 새 서비스을 추가할 수 있습니다.
+              {{ t('courseListAdminDescription') }}
             </p>
           </div>
 
@@ -57,7 +57,7 @@
             to="/courses/new"
             class="btn btn-primary create-course-btn"
           >
-            서비스 등록
+            {{ t('serviceCreate') }}
           </router-link>
         </div>
 
@@ -69,7 +69,7 @@
             :class="['filter-chip', { active: selectedCategory === cat }]"
             @click="selectCategory(cat)"
           >
-            {{ cat }}
+            {{ translateCategory(cat) }}
           </button>
         </div>
 
@@ -96,14 +96,14 @@
 
         <!-- 빈 상태 -->
         <div v-else class="empty-state">
-          <p>해당 영역의 서비스이 없습니다.</p>
+          <p>{{ t('noServices') }}</p>
 
           <router-link
             v-if="isInstructor"
             to="/courses/new"
             class="btn btn-primary empty-action-btn"
           >
-            첫 서비스 등록하기
+            {{ t('createFirstService') }}
           </router-link>
         </div>
       </main>
@@ -118,10 +118,21 @@ import AppHeader from '@/components/AppHeader.vue'
 import CourseCard from '@/components/CourseCard.vue'
 import { useCourseStore } from '@/store/course.js'
 import { useAuthStore } from '@/store/auth.js'
+import { useI18n } from '@/i18n/index.js'
 
 const router = useRouter()
 const courseStore = useCourseStore()
 const auth = useAuthStore()
+const { t } = useI18n()
+
+const categoryTranslationKeys = {
+  '전체': 'all', '의료': 'healthcare', '금융': 'finance',
+  '행정': 'admin', '법률·안전': 'security', '학업': 'academic', '생활': 'life'
+}
+
+function translateCategory(category) {
+  return t(categoryTranslationKeys[category] || category)
+}
 
 const { categories, loading } = courseStore
 

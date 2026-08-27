@@ -9,21 +9,22 @@
 
       <!-- 네비게이션 -->
       <nav class="nav-links" v-if="auth.isAuthenticated">
-        <router-link to="/courses" class="nav-link" :class="{ active: $route.path.startsWith('/courses') }">강의</router-link>
-        <router-link to="/enrollments" class="nav-link" :class="{ active: $route.path === '/enrollments' }">내 학습</router-link>
+        <router-link to="/courses" class="nav-link" :class="{ active: $route.path.startsWith('/courses') }">{{ t('service') }}</router-link>
+        <router-link to="/enrollments" class="nav-link" :class="{ active: $route.path === '/enrollments' }">{{ t('myServices') }}</router-link>
       </nav>
 
       <!-- 우측 액션 -->
       <div class="header-actions">
+        <LanguageSwitcher />
         <template v-if="auth.isAuthenticated">
           <router-link to="/mypage" class="user-avatar" :title="auth.user?.name">
             {{ auth.user?.name?.charAt(0) || '?' }}
           </router-link>
-          <button class="btn btn-ghost btn-sm" @click="handleLogout">로그아웃</button>
+          <button class="btn btn-ghost btn-sm" @click="handleLogout">{{ t('logout') }}</button>
         </template>
         <template v-else>
-          <router-link to="/login" class="btn btn-ghost btn-sm">로그인</router-link>
-          <router-link to="/login" class="btn btn-primary btn-sm">시작하기</router-link>
+          <router-link to="/login" class="btn btn-ghost btn-sm">{{ t('login') }}</router-link>
+          <router-link to="/login" class="btn btn-primary btn-sm">{{ t('getStarted') }}</router-link>
         </template>
       </div>
     </div>
@@ -33,9 +34,12 @@
 <script setup>
 import { useAuthStore } from '@/store/auth.js'
 import { useRouter } from 'vue-router'
+import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
+import { useI18n } from '@/i18n/index.js'
 
 const auth = useAuthStore()
 const router = useRouter()
+const { t } = useI18n()
 
 function handleLogout() {
   auth.logout()
@@ -124,5 +128,17 @@ function handleLogout() {
 .user-avatar:hover {
   background: var(--color-primary);
   color: #fff;
+}
+
+@media (max-width: 720px) {
+  .header-inner { padding: 0 12px; gap: 10px; }
+  .logo-text, .nav-links { display: none; }
+  .header-actions { gap: 4px; }
+  .btn-sm { padding: 7px 10px; }
+}
+
+@media (max-width: 480px) {
+  .logo { display: none; }
+  .header-actions { width: 100%; justify-content: flex-end; }
 }
 </style>

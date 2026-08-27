@@ -6,17 +6,17 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-content fade-in-up">
-          <span class="hero-badge">MSA 기반 서비스 제공 플랫폼</span>
-          <h1 class="hero-title">생활을 더 편리하게,<br>학습을 더 빠르게</h1>
+          <span class="hero-badge">{{ t('landingBadge') }}</span>
+          <h1 class="hero-title">{{ t('landingTitleLine1') }}<br>{{ t('landingTitleLine2') }}</h1>
           <p class="hero-desc"></p>
           <div class="hero-actions">
-            <router-link to="/login" class="btn btn-primary btn-lg">로그인하기</router-link>
-            <router-link to="/courses" class="btn btn-outline btn-lg">서비스 둘러보기</router-link>
+            <router-link to="/login" class="btn btn-primary btn-lg">{{ t('getStarted') }}</router-link>
+            <router-link to="/courses" class="btn btn-outline btn-lg">{{ t('browseServices') }}</router-link>
           </div>
           <div class="hero-stats">
-            <div class="stat"><span class="stat-num">120+</span><span class="stat-label">서비스</span></div>
-            <div class="stat"><span class="stat-num">140+</span><span class="stat-label">유학생</span></div>
-            <div class="stat"><span class="stat-num">580+</span><span class="stat-label">이용학생</span></div>
+            <div class="stat"><span class="stat-num">120+</span><span class="stat-label">{{ t('service') }}</span></div>
+            <div class="stat"><span class="stat-num">140+</span><span class="stat-label">{{ t('studentsAbroad') }}</span></div>
+            <div class="stat"><span class="stat-num">580+</span><span class="stat-label">{{ t('users') }}</span></div>
           </div>
         </div>
         <div class="hero-visual fade-in">
@@ -29,8 +29,8 @@
     <section class="popular-section">
       <div class="section-inner">
         <div class="section-header">
-          <h2 class="section-title">인기 서비스</h2>
-          <router-link to="/login" class="section-link">전체 보기 →</router-link>
+          <h2 class="section-title">{{ t('popularServices') }}</h2>
+          <router-link to="/login" class="section-link">{{ t('viewAll') }}</router-link>
         </div>
         <div class="course-grid">
           <div v-for="course in featuredCourses" :key="course.id" class="course-card-landing">
@@ -53,7 +53,7 @@
     <!-- 특징 섹션 -->
     <section class="features-section">
       <div class="section-inner">
-        <h2 class="section-title center">왜 LearnNexus인가요?</h2>
+        <h2 class="section-title center">{{ t('whyLearnNexus') }}</h2>
         <div class="features-grid">
           <div v-for="f in features" :key="f.title" class="feature-card">
             <div class="feature-icon">{{ f.icon }}</div>
@@ -67,9 +67,9 @@
     <!-- CTA -->
     <section class="cta-section">
       <div class="cta-inner">
-        <h2>지금 바로 시작하세요</h2>
-        <p>수백 명의 유학생들이 LearnNexus와 함께 성장하고 있습니다.</p>
-        <router-link to="/login" class="btn btn-primary btn-lg">무료로 시작하기</router-link>
+        <h2>{{ t('startNow') }}</h2>
+        <p>{{ t('ctaDescription') }}</p>
+        <router-link to="/login" class="btn btn-primary btn-lg">{{ t('startFree') }}</router-link>
       </div>
     </section>
 
@@ -87,30 +87,33 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
+import { useI18n } from '@/i18n/index.js'
+import { useCourseStore } from '@/store/course.js'
 
-import springImg   from '@/assets/images/services/international-student-hospital-assistance.png'
-import vueImg      from '@/assets/images/services/international-student-financial-assistance.png'
-import k8sImg      from '@/assets/images/services/international-student-administrative-assistance.png'
-import dockerImg   from '@/assets/images/services/international-student-lecture-translation.png'
-import pythonImg   from '@/assets/images/services/lecture-note-organization-assistance.png'
-import genaiImg    from '@/assets/images/services/international-student-campus-life-guide.png'
+const { t } = useI18n()
+const courseStore = useCourseStore()
 
-const featuredCourses = [
-  { id:1, title:'유학생 병원 업무 보조', category:'의료',    instructor:'', price:'', thumbSrc: springImg, thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:2, title:'유학생 금융 업무 보조',  category:'금융', instructor:'', price:'', thumbSrc: vueImg,    thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:3, title:'유학생 행정 업무 보조',category:'행정',   instructor:'', price:'', thumbSrc: k8sImg,    thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:4, title:'유학생 강의 번역 서비스', category:'학업',    instructor:'', price:'', thumbSrc: dockerImg, thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:5, title:'강의 노트 정리 보조 서비스',   category:'학업',    instructor:'', price:'', thumbSrc: pythonImg, thumbBg:'thumb-purple', badgeClass:'badge-purple' },
-  { id:6, title:'유학생 학교 생활 안내 서비스',   category:'생활',        instructor:'', price:'', thumbSrc: genaiImg,  thumbBg:'thumb-pink',   badgeClass:'badge-pink'   },
-]
+// 서비스 목록과 동일한 ID·카테고리 썸네일 매핑을 사용한다.
+const featuredCourses = computed(() => [
+  { id:1, title:t('landingServiceHospital'), category:t('healthcare'), instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-teal' },
+  { id:2, title:t('landingServiceFinance'), category:t('finance'), instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-amber' },
+  { id:3, title:t('landingServiceAdmin'), category:t('admin'), instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-blue' },
+  { id:4, title:t('landingServiceTranslation'), category:t('academic'), instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-purple' },
+  { id:5, title:t('landingServiceNotes'), category:t('academic'), instructor:'', price:'', thumbBg:'thumb-purple', badgeClass:'badge-purple' },
+  { id:6, title:t('landingServiceCampus'), category:t('life'), instructor:'', price:'', thumbBg:'thumb-pink', badgeClass:'badge-pink' }
+].map(course => ({
+  ...course,
+  thumbSrc: courseStore.getThumbnail(course)
+})))
 
-const features = [
-  { icon:'🚀', title:'유학생의 신속한 업무 처리', desc:'유학생의 생활을 원활하게 도와주는 업무 보조 서비스를 제공합니다.' },
-  { icon:'🎯', title:'맞춤 서비스 추천', desc:'AI 기반 추천 시스템이 서비스 이용 이력을 분석해 딱 맞는 서비스를 추천합니다.' },
-  { icon:'🍔', title:'간편한 서비스 신청', desc:'원클릭 신청으로 서비스를 바로 제공받으세요.' },
-  { icon:'📱', title:'언제 어디서나', desc:'PC, 태블릿, 모바일 어디서든 끊김 없이 이용하세요.' },
-]
+const features = computed(() => [
+  { icon:'🚀', title:t('featureFastTitle'), desc:t('featureFastDesc') },
+  { icon:'🎯', title:t('featureRecommendTitle'), desc:t('featureRecommendDesc') },
+  { icon:'🍔', title:t('featureEasyTitle'), desc:t('featureEasyDesc') },
+  { icon:'📱', title:t('featureAnywhereTitle'), desc:t('featureAnywhereDesc') }
+])
 </script>
 
 <style scoped>
@@ -213,18 +216,30 @@ const features = [
   box-shadow: var(--shadow-md);
 }
 .card-thumb {
-  height: 110px;
+  width: 100%;
+  aspect-ratio: 19 / 10;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 .thumb-teal   { background: #E1F5EE; }
 .thumb-blue   { background: #E6F1FB; }
 .thumb-purple { background: #EEEDFE; }
 .thumb-pink   { background: #FBEAF0; }
-.thumb-img { width: 100%; height: 100%; object-fit: contain; padding: 14px; }
+/* 첨부 이미지처럼 위쪽만 둥글고 아래쪽은 일자로 표시한다. */
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
 .card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+/* 카테고리 뱃지는 텍스트 길이만큼만 표시한다. */
+.card-body > .badge { align-self: flex-start; width: fit-content; }
 .card-title { font-size: 14px; font-weight: 600; color: var(--color-text-primary); line-height: 1.4; }
 .card-meta { display: flex; justify-content: space-between; align-items: center; }
 .instructor { font-size: 12px; color: var(--color-text-secondary); }

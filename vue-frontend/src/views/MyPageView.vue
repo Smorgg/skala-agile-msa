@@ -4,10 +4,10 @@
     <div class="page-layout">
       <aside class="sidebar">
         <div class="sidebar-section">
-          <div class="sidebar-label">메뉴</div>
+          <div class="sidebar-label">{{ t('menu') }}</div>
 
           <router-link to="/courses" class="sidebar-item">
-            <span class="si-icon">👨‍💼</span> 서비스 목록
+            <span class="si-icon">👨‍💼</span> {{ t('serviceList') }}
           </router-link>
 
           <router-link
@@ -15,18 +15,17 @@
             to="/enrollments"
             class="sidebar-item"
           >
-            <span class="si-icon">✅</span> 내 서비스 목록
-          </router-link>
-
-          <router-link to="/mypage" class="sidebar-item active">
-            <span class="si-icon">⭐</span> 마이페이지
+            <span class="si-icon">✅</span> {{ t('myServiceList') }}
           </router-link>
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">계정</div>
+          <div class="sidebar-label">{{ t('account') }}</div>
+          <router-link to="/mypage" class="sidebar-item active">
+            <span class="si-icon">👤</span> {{ t('myPage') }}
+          </router-link>
           <button class="sidebar-item sidebar-btn" @click="handleLogout">
-            <span class="si-icon">🚪</span> 로그아웃
+            <span class="si-icon">🚪</span> {{ t('logout') }}
           </button>
         </div>
       </aside>
@@ -36,17 +35,17 @@
         <div class="profile-card fade-in-up">
           <div class="profile-avatar">{{ auth.user?.name?.charAt(0) || '?' }}</div>
           <div class="profile-info">
-            <h2 class="profile-name">{{ auth.user?.name || '사용자' }}</h2>
+            <h2 class="profile-name">{{ auth.user?.name || t('user') }}</h2>
             <p class="profile-email">{{ auth.user?.email || '-' }}</p>
             <span class="badge" :class="isInstructor ? 'badge-amber' : 'badge-blue'">
-              {{ isInstructor ? '관리자' : '학생' }}
+              {{ isInstructor ? t('administrator') : t('student') }}
             </span>
           </div>
         </div>
 
         <!-- 학생 화면 -->
         <section v-if="!isInstructor" class="recommend-section">
-          <h3 class="section-title">추천 서비스</h3>
+          <h3 class="section-title">{{ t('recommendedServices') }}</h3>
 
           <p v-if="recommendMessage" class="recommend-message">
             {{ recommendMessage }}
@@ -71,24 +70,24 @@
           </p>
 
           <p v-else class="empty-text">
-            아직 추천할 서비스가 없습니다.
+            {{ t('noRecommendations') }}
           </p>
         </section>
 
         <!-- 강사 화면 -->
         <section v-else class="instructor-section">
           <div class="section-head">
-            <h3 class="section-title">내가 등록한 서비스</h3>
-            <span class="section-subtitle">등록한 서비스와 서비스별 이용자 수를 확인할 수 있습니다.</span>
+            <h3 class="section-title">{{ t('myCreatedServices') }}</h3>
+            <span class="section-subtitle">{{ t('myCreatedServicesDescription') }}</span>
           </div>
 
           <div class="summary-cards">
             <div class="summary-card">
-              <div class="summary-label">등록 서비스 수</div>
+              <div class="summary-label">{{ t('createdServiceCount') }}</div>
               <div class="summary-value">{{ myCourses.length }}</div>
             </div>
             <div class="summary-card">
-              <div class="summary-label">총 이용자 수</div>
+              <div class="summary-label">{{ t('totalUserCount') }}</div>
               <div class="summary-value">{{ totalEnrollmentCount }}</div>
             </div>
           </div>
@@ -112,7 +111,7 @@
               <div class="course-card-top">
                 <div>
                   <h4 class="course-title">{{ course.title }}</h4>
-                  <p class="course-desc">{{ course.description || '설명이 없습니다.' }}</p>
+                  <p class="course-desc">{{ course.description || t('noDescription') }}</p>
                 </div>
                 <span
                   class="status-badge"
@@ -124,28 +123,28 @@
 
               <div class="course-meta-grid">
                 <div class="meta-box">
-                  <div class="meta-label">카테고리</div>
-                  <div class="meta-value">{{ course.category || '-' }}</div>
+                  <div class="meta-label">{{ t('category') }}</div>
+                  <div class="meta-value">{{ translateCategory(course.category) }}</div>
                 </div>
                 <!-- <div class="meta-box">
                   <div class="meta-label">가격</div>
                   <div class="meta-value">{{ formatPrice(course.price) }}</div>
                 </div> -->
                 <div class="meta-box">
-                  <div class="meta-label">이용자 수</div>
+                  <div class="meta-label">{{ t('userCount') }}</div>
                   <div class="meta-value">
-                    {{ course.enrollment_count ?? course.enrollmentCount ?? 0 }}명
+                    {{ t('peopleUnit', { count: course.enrollment_count ?? course.enrollmentCount ?? 0 }) }}
                   </div>
                 </div>
                 <div class="meta-box">
-                  <div class="meta-label">서비스 ID</div>
+                  <div class="meta-label">{{ t('serviceId') }}</div>
                   <div class="meta-value">#{{ course.id }}</div>
                 </div>
               </div>
 
               <div class="course-card-actions">
                 <router-link :to="`/courses/${course.id}`" class="action-btn action-primary">
-                  서비스 보기
+                  {{ t('viewService') }}
                 </router-link>
               </div>
             </div>
@@ -156,7 +155,7 @@
           </p>
 
           <p v-else class="empty-text">
-            아직 등록한 서비스가 없습니다.
+            {{ t('noCreatedServices') }}
           </p>
         </section>
       </main>
@@ -172,11 +171,23 @@ import CourseCard from '@/components/CourseCard.vue'
 import { useAuthStore } from '@/store/auth.js'
 import { enrollmentApi } from '@/api/enrollment.js'
 import { courseApi } from '@/api/course.js'
+import { useI18n } from '@/i18n/index.js'
 
 const router = useRouter()
 const auth = useAuthStore()
+const { t } = useI18n()
 
 const isInstructor = computed(() => auth.user?.role === 'INSTRUCTOR')
+
+const categoryTranslationKeys = {
+  '의료': 'healthcare', '금융': 'finance', '행정': 'admin',
+  '학업': 'academic', '생활': 'life', '백엔드': 'backend',
+  '프론트엔드': 'frontend', '데이터': 'data'
+}
+
+function translateCategory(category) {
+  return category ? t(categoryTranslationKeys[category] || category) : '-'
+}
 
 /* 학생용 */
 const recommendations = ref([])
@@ -225,13 +236,13 @@ async function loadStudentRecommendations() {
   try {
     if (!auth.user) {
       console.warn('[MyPage] auth.user is missing')
-      recommendError.value = '추천 서비스를 준비 중입니다.'
+      recommendError.value = t('preparingRecommendations')
       return
     }
 
     if (!auth.user.id) {
       console.warn('[MyPage] auth.user.id is missing:', auth.user)
-      recommendError.value = '추천 서비스를 준비 중입니다.'
+      recommendError.value = t('preparingRecommendations')
       return
     }
 
@@ -256,7 +267,7 @@ async function loadStudentRecommendations() {
     }
   } catch (error) {
     console.error('[MyPage] failed to load recommendations:', error)
-    recommendError.value = '현재 추천 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+    recommendError.value = t('recommendationLoadFailed')
   } finally {
     recommendLoading.value = false
   }
@@ -266,13 +277,13 @@ async function loadInstructorCourses() {
   try {
     if (!auth.user) {
       console.warn('[MyPage] instructor auth.user is missing')
-      instructorError.value = '서비스 정보를 불러오지 못했습니다.'
+      instructorError.value = t('serviceLoadFailed')
       return
     }
 
     if (!auth.user.id) {
       console.warn('[MyPage] instructor auth.user.id is missing:', auth.user)
-      instructorError.value = '서비스 정보를 불러오지 못했습니다.'
+      instructorError.value = t('serviceLoadFailed')
       return
     }
 
@@ -315,7 +326,7 @@ async function loadInstructorCourses() {
     console.log('[MyPage] filtered myCourses =', myCourses.value)
   } catch (error) {
     console.error('[MyPage] failed to load instructor courses:', error)
-    instructorError.value = '현재 서비스 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+    instructorError.value = t('instructorServicesLoadFailed')
   } finally {
     instructorLoading.value = false
   }
