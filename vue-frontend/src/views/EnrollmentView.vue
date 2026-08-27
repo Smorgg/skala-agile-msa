@@ -7,7 +7,7 @@
           <div class="sidebar-label">메뉴</div>
 
           <router-link to="/courses" class="sidebar-item">
-            <span class="si-icon">📚</span> 강의 목록
+            <span class="si-icon">👨‍💼</span> 서비스 목록
           </router-link>
 
           <router-link
@@ -15,7 +15,7 @@
             to="/enrollments"
             class="sidebar-item active"
           >
-            <span class="si-icon">✅</span> 내 수강 목록
+            <span class="si-icon">✅</span> 내 서비스 목록
           </router-link>
 
           <router-link to="/mypage" class="sidebar-item">
@@ -35,7 +35,7 @@
       </aside>
 
       <main class="main-content">
-        <h1 class="page-title">내 수강 목록</h1>
+        <h1 class="page-title">내 서비스 목록</h1>
 
         <div v-if="loading" class="loading-center">
           <div class="spinner"></div>
@@ -73,9 +73,9 @@
 
         <div v-else class="empty-state">
           <p class="empty-icon">📭</p>
-          <p>수강 중인 강의가 없습니다.</p>
+          <p>이용 중인 서비스가 없습니다.</p>
           <router-link to="/courses" class="btn btn-primary" style="margin-top:16px;">
-            강의 둘러보기
+            서비스 둘러보기
           </router-link>
         </div>
       </main>
@@ -99,11 +99,11 @@ const loading = ref(true)
 const isInstructor = computed(() => auth.user?.role === 'INSTRUCTOR')
 
 const categoryConfig = {
-  '백엔드': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'spring_boot' },
-  '프론트엔드': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'vue_js' },
-  'DevOps': { bg: 'thumb-blue', badge: 'badge-blue', thumb: 'kubernetes' },
-  '데이터': { bg: 'thumb-purple', badge: 'badge-purple', thumb: 'python' },
-  'AI': { bg: 'thumb-pink', badge: 'badge-pink', thumb: 'generative_ai' },
+  '의료': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'spring_boot' },
+  '금융': { bg: 'thumb-teal', badge: 'badge-teal', thumb: 'vue_js' },
+  '행정': { bg: 'thumb-blue', badge: 'badge-blue', thumb: 'kubernetes' },
+  '학업': { bg: 'thumb-purple', badge: 'badge-purple', thumb: 'python' },
+  '생활': { bg: 'thumb-pink', badge: 'badge-pink', thumb: 'generative_ai' },
 }
 
 function getThumbBg(cat) {

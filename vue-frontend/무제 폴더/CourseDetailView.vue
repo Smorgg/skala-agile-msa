@@ -10,19 +10,19 @@
             <span class="badge" :class="badgeClass">{{ displayCategory }}</span>
             <h1 class="detail-title">{{ course.title }}</h1>
             <p class="detail-desc">
-              {{ course.description || '학교 관리자가 직접 준비한 프로그램으로 필요한 지원을 받아보세요.' }}
+              {{ course.description || '실무 전문가가 직접 설계한 커리큘럼으로 체계적으로 학습하세요.' }}
             </p>
 
             <div class="detail-meta">
-              <span>담당 부서: {{ displayInstructorName }}</span>
-              <span>신청자: {{ displayEnrollmentCount }}명</span>
+              <span>강사: {{ displayInstructorName }}</span>
+              <span>수강생: {{ displayEnrollmentCount }}명</span>
             </div>
           </div>
 
-          <!-- 우측 결제/신청 카드 -->
+          <!-- 우측 결제/수강 카드 -->
           <div class="enroll-card fade-in">
             <div class="enroll-thumb" :class="thumbBg">
-              <span class="thumb-emoji">{{ thumbIcon }}</span>
+              <img v-if="thumbSrc" :src="thumbSrc" :alt="course.title" />
             </div>
 
             <div class="enroll-body">
@@ -45,9 +45,9 @@
               </p>
 
               <ul class="enroll-info-list">
-                <li>✅ 즉시 신청 가능</li>
-                <li>✅ 신청 내역 상시 확인</li>
-                <li>✅ 담당 부서 안내 제공</li>
+                <li>✅ 즉시 수강 가능</li>
+                <li>✅ 평생 소장</li>
+                <li>✅ 수료증 발급</li>
               </ul>
             </div>
           </div>
@@ -60,7 +60,7 @@
     </div>
 
     <div v-else class="loading-center">
-      <p class="empty-text">서비스 정보를 불러오지 못했습니다.</p>
+      <p class="empty-text">강의 정보를 불러오지 못했습니다.</p>
     </div>
   </div>
 </template>
@@ -87,11 +87,11 @@ const loading = computed(() => courseStore.loading)
 const isInstructor = computed(() => auth.user?.role === 'INSTRUCTOR')
 
 const categoryConfig = {
-  '의료': { badge: 'badge-pink', bg: 'thumb-pink', icon: '🏥' },
-  '금융': { badge: 'badge-blue', bg: 'thumb-blue', icon: '💰' },
-  '학업': { badge: 'badge-teal', bg: 'thumb-teal', icon: '📖' },
-  '생활': { badge: 'badge-purple', bg: 'thumb-purple', icon: '🏠' },
-  '행정': { badge: 'badge-gray', bg: 'thumb-gray', icon: '📋' },
+  '백엔드': { badge: 'badge-teal', bg: 'thumb-teal', thumb: 'spring_boot' },
+  '프론트엔드': { badge: 'badge-teal', bg: 'thumb-teal', thumb: 'vue_js' },
+  'DevOps': { badge: 'badge-blue', bg: 'thumb-blue', thumb: 'kubernetes' },
+  '데이터': { badge: 'badge-purple', bg: 'thumb-purple', thumb: 'python' },
+  'AI': { badge: 'badge-pink', bg: 'thumb-pink', thumb: 'generative_ai' },
 }
 
 const config = computed(() => categoryConfig[course.value?.category] || {})
@@ -107,7 +107,7 @@ const displayInstructorName = computed(() => {
     course.value?.instructor?.name ||
     course.value?.instructor_name ||
     course.value?.ownerName ||
-    '담당 부서 정보 없음'
+    '강사 정보 없음'
   )
 })
 
@@ -125,13 +125,22 @@ const displayPrice = computed(() => {
   return Number.isNaN(value) ? '0' : value.toLocaleString()
 })
 
-const thumbIcon = computed(() => config.value.icon || '📌')
+const thumbSrc = computed(() => {
+  const key = course.value?.thumbnail || config.value.thumb
+  if (!key) return null
+
+  try {
+    return new URL(`../assets/images/courses/${key}.png`, import.meta.url).href
+  } catch {
+    return null
+  }
+})
 
 const buttonLabel = computed(() => {
-  if (isInstructor.value) return '운영자 계정은 신청 불가'
-  if (enrollmentStatus.value === 'ACTIVE') return '내 신청 목록으로 이동'
-  if (enrollmentStatus.value === 'PENDING') return '신청 완료 · 처리 중'
-  return '신청하기'
+  if (isInstructor.value) return '강사 계정은 신청 불가'
+  if (enrollmentStatus.value === 'ACTIVE') return '내 수강 목록으로 이동'
+  if (enrollmentStatus.value === 'PENDING') return '신청 완료 · 결제 처리 중'
+  return '결제하고 수강하기'
 })
 
 const buttonDisabled = computed(() => {
@@ -143,18 +152,18 @@ const buttonDisabled = computed(() => {
 
 const helperText = computed(() => {
   if (isInstructor.value) {
-    return '운영자 계정은 본인이 등록한 프로그램을 신청할 수 없습니다.'
+    return '강사 계정은 본인 강의를 수강 신청할 수 없습니다.'
   }
 
   if (enrollmentStatus.value === 'ACTIVE') {
-    return '이미 신청한 프로그램입니다. 내 신청 목록에서 바로 확인할 수 있습니다.'
+    return '이미 수강 중인 강의입니다. 내 수강 목록에서 바로 이어서 학습할 수 있습니다.'
   }
 
   if (enrollmentStatus.value === 'PENDING') {
-    return '신청이 접수되었습니다. 처리 상태가 반영되면 내 신청 목록에서 확인할 수 있습니다.'
+    return '수강 신청이 접수되었습니다. 결제/처리 상태가 반영되면 내 수강 목록에서 확인할 수 있습니다.'
   }
 
-  return '신청을 진행하면 (유료 프로그램의 경우 결제와 함께) 접수가 완료됩니다.'
+  return '결제를 진행하면 수강 신청이 함께 처리됩니다.'
 })
 
 async function loadEnrollmentStatus() {
@@ -191,12 +200,12 @@ async function handlePrimaryAction() {
   enrollError.value = ''
 
   if (!course.value?.id) {
-    enrollError.value = '프로그램 정보가 올바르지 않습니다.'
+    enrollError.value = '강의 정보가 올바르지 않습니다.'
     return
   }
 
   if (isInstructor.value) {
-    enrollError.value = '운영자 계정은 본인이 등록한 프로그램을 신청할 수 없습니다.'
+    enrollError.value = '강사 계정은 본인 강의를 수강 신청할 수 없습니다.'
     return
   }
 
@@ -216,7 +225,7 @@ async function handlePrimaryAction() {
     enrollmentStatus.value = 'PENDING'
   } catch (e) {
     console.error('[CourseDetail] enroll failed:', e)
-    enrollError.value = e.response?.data?.message || '프로그램 신청에 실패했습니다.'
+    enrollError.value = e.response?.data?.message || '결제/수강 신청에 실패했습니다.'
   } finally {
     enrolling.value = false
   }
@@ -303,8 +312,11 @@ watch(
   justify-content: center;
 }
 
-.thumb-emoji {
-  font-size: 56px;
+.enroll-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 20px;
 }
 
 .thumb-teal { background: #E1F5EE; }

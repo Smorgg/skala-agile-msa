@@ -7,7 +7,7 @@
           <div class="sidebar-label">메뉴</div>
 
           <router-link to="/courses" class="sidebar-item">
-            <span class="si-icon">📚</span> 강의 목록
+            <span class="si-icon">👨‍💼</span> 서비스 목록
           </router-link>
 
           <router-link
@@ -15,7 +15,7 @@
             to="/enrollments"
             class="sidebar-item"
           >
-            <span class="si-icon">✅</span> 내 수강 목록
+            <span class="si-icon">✅</span> 내 서비스 목록
           </router-link>
 
           <router-link to="/mypage" class="sidebar-item active">
@@ -39,14 +39,14 @@
             <h2 class="profile-name">{{ auth.user?.name || '사용자' }}</h2>
             <p class="profile-email">{{ auth.user?.email || '-' }}</p>
             <span class="badge" :class="isInstructor ? 'badge-amber' : 'badge-blue'">
-              {{ isInstructor ? '강사' : '학생' }}
+              {{ isInstructor ? '관리자' : '학생' }}
             </span>
           </div>
         </div>
 
         <!-- 학생 화면 -->
         <section v-if="!isInstructor" class="recommend-section">
-          <h3 class="section-title">추천 강의</h3>
+          <h3 class="section-title">추천 서비스</h3>
 
           <p v-if="recommendMessage" class="recommend-message">
             {{ recommendMessage }}
@@ -71,24 +71,24 @@
           </p>
 
           <p v-else class="empty-text">
-            아직 추천할 강의가 없습니다.
+            아직 추천할 서비스가 없습니다.
           </p>
         </section>
 
         <!-- 강사 화면 -->
         <section v-else class="instructor-section">
           <div class="section-head">
-            <h3 class="section-title">내가 등록한 강좌</h3>
-            <span class="section-subtitle">등록한 강좌와 강좌별 수강생 수를 확인할 수 있습니다.</span>
+            <h3 class="section-title">내가 등록한 서비스</h3>
+            <span class="section-subtitle">등록한 서비스와 서비스별 이용자 수를 확인할 수 있습니다.</span>
           </div>
 
           <div class="summary-cards">
             <div class="summary-card">
-              <div class="summary-label">등록 강좌 수</div>
+              <div class="summary-label">등록 서비스 수</div>
               <div class="summary-value">{{ myCourses.length }}</div>
             </div>
             <div class="summary-card">
-              <div class="summary-label">총 수강생 수</div>
+              <div class="summary-label">총 이용자 수</div>
               <div class="summary-value">{{ totalEnrollmentCount }}</div>
             </div>
           </div>
@@ -127,25 +127,25 @@
                   <div class="meta-label">카테고리</div>
                   <div class="meta-value">{{ course.category || '-' }}</div>
                 </div>
-                <div class="meta-box">
+                <!-- <div class="meta-box">
                   <div class="meta-label">가격</div>
                   <div class="meta-value">{{ formatPrice(course.price) }}</div>
-                </div>
+                </div> -->
                 <div class="meta-box">
-                  <div class="meta-label">수강생 수</div>
+                  <div class="meta-label">이용자 수</div>
                   <div class="meta-value">
                     {{ course.enrollment_count ?? course.enrollmentCount ?? 0 }}명
                   </div>
                 </div>
                 <div class="meta-box">
-                  <div class="meta-label">강좌 ID</div>
+                  <div class="meta-label">서비스 ID</div>
                   <div class="meta-value">#{{ course.id }}</div>
                 </div>
               </div>
 
               <div class="course-card-actions">
                 <router-link :to="`/courses/${course.id}`" class="action-btn action-primary">
-                  강좌 보기
+                  서비스 보기
                 </router-link>
               </div>
             </div>
@@ -156,7 +156,7 @@
           </p>
 
           <p v-else class="empty-text">
-            아직 등록한 강좌가 없습니다.
+            아직 등록한 서비스가 없습니다.
           </p>
         </section>
       </main>
@@ -225,13 +225,13 @@ async function loadStudentRecommendations() {
   try {
     if (!auth.user) {
       console.warn('[MyPage] auth.user is missing')
-      recommendError.value = '추천 강의를 준비 중입니다.'
+      recommendError.value = '추천 서비스를 준비 중입니다.'
       return
     }
 
     if (!auth.user.id) {
       console.warn('[MyPage] auth.user.id is missing:', auth.user)
-      recommendError.value = '추천 강의를 준비 중입니다.'
+      recommendError.value = '추천 서비스를 준비 중입니다.'
       return
     }
 
@@ -256,7 +256,7 @@ async function loadStudentRecommendations() {
     }
   } catch (error) {
     console.error('[MyPage] failed to load recommendations:', error)
-    recommendError.value = '현재 추천 강의를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+    recommendError.value = '현재 추천 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   } finally {
     recommendLoading.value = false
   }
@@ -266,18 +266,18 @@ async function loadInstructorCourses() {
   try {
     if (!auth.user) {
       console.warn('[MyPage] instructor auth.user is missing')
-      instructorError.value = '강좌 정보를 불러오지 못했습니다.'
+      instructorError.value = '서비스 정보를 불러오지 못했습니다.'
       return
     }
 
     if (!auth.user.id) {
       console.warn('[MyPage] instructor auth.user.id is missing:', auth.user)
-      instructorError.value = '강좌 정보를 불러오지 못했습니다.'
+      instructorError.value = '서비스 정보를 불러오지 못했습니다.'
       return
     }
 
     const res = await courseApi.getCourses()
-    console.log('[MyPage] course list response:', res.data)
+    console.log('[MyPage] service list response:', res.data)
 
     let courses = []
 
@@ -315,7 +315,7 @@ async function loadInstructorCourses() {
     console.log('[MyPage] filtered myCourses =', myCourses.value)
   } catch (error) {
     console.error('[MyPage] failed to load instructor courses:', error)
-    instructorError.value = '현재 강좌 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+    instructorError.value = '현재 서비스 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   } finally {
     instructorLoading.value = false
   }

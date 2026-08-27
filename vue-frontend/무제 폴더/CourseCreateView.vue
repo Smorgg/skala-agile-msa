@@ -24,9 +24,9 @@
             <span class="si-icon">✍️</span> 서비스 등록
           </router-link>
 
-          <!-- <router-link to="/mypage" class="sidebar-item">
+          <router-link to="/mypage" class="sidebar-item">
             <span class="si-icon">⭐</span> 마이페이지
-          </router-link> -->
+          </router-link>
         </div>
 
         <div class="sidebar-section">
@@ -45,7 +45,7 @@
         <div class="content-header">
           <div>
             <h1 class="page-title">서비스 등록</h1>
-            <p class="page-subtitle">학교 관리자 계정으로 새로운 서비스을 등록합니다.</p>
+            <p class="page-subtitle">강사 계정으로 새로운 서비스를 등록합니다.</p>
           </div>
         </div>
 
@@ -58,7 +58,7 @@
                 v-model.trim="form.title"
                 type="text"
                 class="form-input"
-                placeholder="예: 외국인 유학생 계좌 개설 가이드"
+                placeholder="예: Cloud Native App기반 Web Service 개발"
                 maxlength="100"
               />
             </div>
@@ -70,7 +70,7 @@
                 v-model.trim="form.description"
                 class="form-textarea"
                 rows="6"
-                placeholder="서비스 소개, 신청 대상, 진행 방식 등을 입력해 주세요."
+                placeholder="서비스 소개를 입력해 주세요."
               ></textarea>
             </div>
 
@@ -78,7 +78,7 @@
               <div class="form-group">
                 <label class="form-label" for="category">카테고리</label>
                 <select id="category" v-model="form.category" class="form-select">
-                  <option disabled value="">영역을 선택하세요</option>
+                  <option disabled value="">카테고리를 선택하세요</option>
                   <option
                     v-for="option in categoryOptions"
                     :key="option.value"
@@ -89,7 +89,7 @@
                 </select>
               </div>
 
-              <!-- <div class="form-group">
+              <div class="form-group">
                 <label class="form-label" for="price">가격</label>
                 <input
                   id="price"
@@ -100,7 +100,7 @@
                   class="form-input"
                   placeholder="예: 50000"
                 />
-              </div> -->
+              </div>
             </div>
 
             <div v-if="validationError" class="error-box">
@@ -155,11 +155,10 @@ const submitError = ref('')
 const submitSuccess = ref('')
 
 const categoryOptions = [
-  { label: '의료', value: 'HEALTHCARE' },
-  { label: '금융', value: 'FINANCE' },
-  { label: '학업', value: 'ACADEMIC' },
-  { label: '생활', value: 'LIFE' },
-  { label: '행정', value: 'ADMIN' }
+  { label: '의료', value: 'BACKEND' },
+  { label: '금융', value: 'FRONTEND' },
+  { label: 'DevOps', value: 'DEVOPS' },
+  { label: 'AI / 데이터', value: 'DATA_SCIENCE' }
 ]
 
 function handleLogout() {
@@ -171,7 +170,7 @@ function validateForm() {
   validationError.value = ''
 
   if (!auth.user || auth.user.role !== 'INSTRUCTOR') {
-    validationError.value = '학교 관리자 계정만 서비스을 등록할 수 있습니다.'
+    validationError.value = '강사 계정만 서비스를 등록할 수 있습니다.'
     return false
   }
 
@@ -186,20 +185,20 @@ function validateForm() {
   }
 
   if (!form.category) {
-    validationError.value = '영역을 선택해 주세요.'
+    validationError.value = '카테고리를 선택해 주세요.'
     return false
   }
 
-  // if (form.price === null || form.price === undefined || form.price === '') {
-  //   validationError.value = '가격을 입력해 주세요.'
-  //   return false
-  // }
+  if (form.price === null || form.price === undefined || form.price === '') {
+    validationError.value = '가격을 입력해 주세요.'
+    return false
+  }
 
-  // const price = Number(form.price)
-  // if (Number.isNaN(price) || price < 0) {
-  //   validationError.value = '가격은 0 이상의 숫자로 입력해 주세요.'
-  //   return false
-  // }
+  const price = Number(form.price)
+  if (Number.isNaN(price) || price < 0) {
+    validationError.value = '가격은 0 이상의 숫자로 입력해 주세요.'
+    return false
+  }
 
   return true
 }
@@ -223,7 +222,7 @@ async function handleSubmit() {
     const res = await courseApi.create(payload)
     console.log('[CourseCreate] create response =', res.data)
 
-    submitSuccess.value = '서비스이 성공적으로 등록되었습니다.'
+    submitSuccess.value = '서비스가 성공적으로 등록되었습니다.'
 
     const createdCourseId =
       res.data?.data?.id ??

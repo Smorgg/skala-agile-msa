@@ -12,7 +12,7 @@
             class="sidebar-item"
             :class="{ active: $route.path === '/courses' }"
           >
-            <span class="si-icon">📚</span> 서비스 목록
+            <span class="si-icon">📚</span> 강의 목록
           </router-link>
 
           <router-link
@@ -20,15 +20,15 @@
             to="/enrollments"
             class="sidebar-item"
           >
-            <span class="si-icon">✅</span> 내 신청 목록
+            <span class="si-icon">✅</span> 내 수강 목록
           </router-link>
 
-          <!-- <router-link
+          <router-link
             to="/mypage"
             class="sidebar-item"
           >
             <span class="si-icon">⭐</span> 마이페이지
-          </router-link> -->
+          </router-link>
         </div>
 
         <div class="sidebar-section">
@@ -46,9 +46,9 @@
       <main class="main-content">
         <div class="content-header">
           <div>
-            <h1 class="page-title">서비스 목록</h1>
+            <h1 class="page-title">강의 목록</h1>
             <p class="page-subtitle" v-if="isInstructor">
-              학교 관리자 계정으로 등록된 서비스을 확인하고 새 서비스을 추가할 수 있습니다.
+              강사 계정으로 등록된 강의를 확인하고 새 강의를 추가할 수 있습니다.
             </p>
           </div>
 
@@ -57,7 +57,7 @@
             to="/courses/new"
             class="btn btn-primary create-course-btn"
           >
-            서비스 등록
+            강의 등록
           </router-link>
         </div>
 
@@ -85,7 +85,7 @@
           </div>
         </div>
 
-        <!-- 서비스 그리드 -->
+        <!-- 강의 그리드 -->
         <div v-else-if="filteredCourses.length" class="course-grid fade-in">
           <CourseCard
             v-for="course in filteredCourses"
@@ -96,14 +96,14 @@
 
         <!-- 빈 상태 -->
         <div v-else class="empty-state">
-          <p>해당 영역의 서비스이 없습니다.</p>
+          <p>해당 카테고리의 강의가 없습니다.</p>
 
           <router-link
             v-if="isInstructor"
             to="/courses/new"
             class="btn btn-primary empty-action-btn"
           >
-            첫 서비스 등록하기
+            첫 강의 등록하기
           </router-link>
         </div>
       </main>
@@ -284,7 +284,7 @@ onMounted(() => {
   border-color: var(--color-primary);
 }
 
-/* 프로그램 그리드 */
+/* 강의 그리드 */
 .course-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -57,7 +57,7 @@ public class Course {
     private LocalDateTime updatedAt;
 
     public enum Category {
-        BACKEND, FRONTEND, DEVOPS, DATA_SCIENCE, MOBILE, SECURITY, DATABASE, OTHER
+        HEALTHCARE, FINANCE, ACADEMIC, LIFE, ADMIN, SECURITY, DATABASE, OTHER
     }
 
     public enum Status {

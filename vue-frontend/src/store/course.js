@@ -9,33 +9,33 @@ export const useCourseStore = defineStore('course', () => {
   const error = ref(null)
   const selectedCategory = ref('전체')
 
-  const categories = ['전체', '백엔드', '프론트엔드', 'DevOps', '데이터', 'AI']
+  const categories = ['전체', '의료', '금융', '행정', '학업', '생활']
 
   // 백엔드 카테고리 → 프론트 표시용 카테고리
   const categoryLabelMap = {
-    BACKEND: '백엔드',
-    FRONTEND: '프론트엔드',
-    DEVOPS: 'DevOps',
-    DATA: '데이터',
-    AI: 'AI'
+    HEALTHCARE: '의료',
+    FINANCE: '금융',
+    ADMIN: '행정',
+    ACADEMIC: '학업',
+    LIFE: '생활'
   }
 
   // 썸네일 이미지 매핑
   const thumbnailMap = {
-    SPRING: new URL('../assets/images/courses/spring_boot.png', import.meta.url).href,
-    VUE: new URL('../assets/images/courses/vue_js.png', import.meta.url).href,
-    DOCKER: new URL('../assets/images/courses/docker.png', import.meta.url).href,
-    KUBERNETES: new URL('../assets/images/courses/kubernetes.png', import.meta.url).href,
-    PYTHON: new URL('../assets/images/courses/python.png', import.meta.url).href,
-    AI: new URL('../assets/images/courses/generative_ai.png', import.meta.url).href,
+    SPRING: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
+    VUE: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
+    DOCKER: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
+    KUBERNETES: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
+    PYTHON: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
+    AI: new URL('../assets/images/services/international-student-hospital-assistance.png', import.meta.url).href,
   }
 
   const categoryThumbnailMap = {
-    '백엔드': thumbnailMap.SPRING,
-    '프론트엔드': thumbnailMap.VUE,
-    'DevOps': thumbnailMap.KUBERNETES,
-    '데이터': thumbnailMap.PYTHON,
-    'AI': thumbnailMap.AI
+    '의료': thumbnailMap.SPRING,
+    '금융': thumbnailMap.VUE,
+    '행정': thumbnailMap.KUBERNETES,
+    '학업': thumbnailMap.PYTHON,
+    '생활': thumbnailMap.AI
   }
 
   function normalizeCategory(category) {
@@ -80,7 +80,7 @@ export const useCourseStore = defineStore('course', () => {
       console.log('[CourseStore] normalized courses =', courses.value)
     } catch (e) {
       console.error('[CourseStore] fetchCourses failed:', e)
-      error.value = e.message || '강의 목록을 불러오지 못했습니다.'
+      error.value = e.message || '서비스 목록을 불러오지 못했습니다.'
       courses.value = []
     } finally {
       loading.value = false
@@ -105,7 +105,7 @@ export const useCourseStore = defineStore('course', () => {
       console.log('[CourseStore] normalized selectedCourse =', selectedCourse.value)
     } catch (e) {
       console.error('[CourseStore] fetchCourse failed:', e)
-      error.value = e.message || '강의 정보를 불러오지 못했습니다.'
+      error.value = e.message || '서비스 정보를 불러오지 못했습니다.'
       selectedCourse.value = null
     } finally {
       loading.value = false

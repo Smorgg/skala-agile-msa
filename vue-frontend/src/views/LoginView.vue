@@ -9,7 +9,7 @@
         </div>
         <div class="brand-content">
           <h2>다시 만나서<br>반갑습니다</h2>
-          <p>로그인하고 나만의 학습 여정을 이어가세요.</p>
+          <p>로그인하고 나만의 여정을 이어가세요.</p>
           <ul class="feature-list">
             <li v-for="f in features" :key="f">
               <span class="dot"></span>{{ f }}
@@ -54,7 +54,7 @@
                 <label class="form-label">역할</label>
                 <select v-model="registerForm.role" class="form-input">
                   <option value="STUDENT">학생</option>
-                  <option value="INSTRUCTOR">강사</option>
+                  <option value="INSTRUCTOR">관리자</option>
                 </select>
               </div>
               <div v-if="error" class="error-msg">{{ error }}</div>
@@ -90,7 +90,7 @@ const success = ref('')
 
 const registerForm = ref({ name: '', email: '', password: '', role: 'STUDENT' })
 
-const features = ['수강 중인 강의 이어보기', '맞춤 강의 추천', '수료증 관리']
+const features = ['유학생 보조 서비스', '맞춤 서비스 추천', '이용중인 서비스 관리']
 
 function handleOAuth() {
   auth.redirectToLogin()

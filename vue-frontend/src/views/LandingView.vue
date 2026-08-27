@@ -6,17 +6,17 @@
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-content fade-in-up">
-          <span class="hero-badge">MSA 기반 교육 플랫폼</span>
-          <h1 class="hero-title">배움을 더 스마트하게,<br>커리어를 더 빠르게</h1>
-          <p class="hero-desc">개발, 디자인, 비즈니스 분야의 전문가 강의를 수강하고 실력을 키워보세요.</p>
+          <span class="hero-badge">MSA 기반 서비스 제공 플랫폼</span>
+          <h1 class="hero-title">생활을 더 편리하게,<br>학습을 더 빠르게</h1>
+          <p class="hero-desc"></p>
           <div class="hero-actions">
-            <router-link to="/login" class="btn btn-primary btn-lg">무료로 시작하기</router-link>
-            <router-link to="/courses" class="btn btn-outline btn-lg">강의 둘러보기</router-link>
+            <router-link to="/login" class="btn btn-primary btn-lg">로그인하기</router-link>
+            <router-link to="/courses" class="btn btn-outline btn-lg">서비스 둘러보기</router-link>
           </div>
           <div class="hero-stats">
-            <div class="stat"><span class="stat-num">1,200+</span><span class="stat-label">강의</span></div>
-            <div class="stat"><span class="stat-num">340+</span><span class="stat-label">강사</span></div>
-            <div class="stat"><span class="stat-num">28,000+</span><span class="stat-label">수강생</span></div>
+            <div class="stat"><span class="stat-num">120+</span><span class="stat-label">서비스</span></div>
+            <div class="stat"><span class="stat-num">140+</span><span class="stat-label">유학생</span></div>
+            <div class="stat"><span class="stat-num">580+</span><span class="stat-label">이용학생</span></div>
           </div>
         </div>
         <div class="hero-visual fade-in">
@@ -29,7 +29,7 @@
     <section class="popular-section">
       <div class="section-inner">
         <div class="section-header">
-          <h2 class="section-title">인기 강의</h2>
+          <h2 class="section-title">인기 서비스</h2>
           <router-link to="/login" class="section-link">전체 보기 →</router-link>
         </div>
         <div class="course-grid">
@@ -68,7 +68,7 @@
     <section class="cta-section">
       <div class="cta-inner">
         <h2>지금 바로 시작하세요</h2>
-        <p>수천 명의 개발자들이 LearnNexus와 함께 성장하고 있습니다.</p>
+        <p>수백 명의 유학생들이 LearnNexus와 함께 성장하고 있습니다.</p>
         <router-link to="/login" class="btn btn-primary btn-lg">무료로 시작하기</router-link>
       </div>
     </section>
@@ -89,27 +89,27 @@
 <script setup>
 import AppHeader from '@/components/AppHeader.vue'
 
-import springImg   from '@/assets/images/courses/spring_boot.png'
-import vueImg      from '@/assets/images/courses/vue_js.png'
-import k8sImg      from '@/assets/images/courses/kubernetes.png'
-import dockerImg   from '@/assets/images/courses/docker.png'
-import pythonImg   from '@/assets/images/courses/python.png'
-import genaiImg    from '@/assets/images/courses/generative_ai.png'
+import springImg   from '@/assets/images/services/international-student-hospital-assistance.png'
+import vueImg      from '@/assets/images/services/international-student-financial-assistance.png'
+import k8sImg      from '@/assets/images/services/international-student-administrative-assistance.png'
+import dockerImg   from '@/assets/images/services/international-student-lecture-translation.png'
+import pythonImg   from '@/assets/images/services/lecture-note-organization-assistance.png'
+import genaiImg    from '@/assets/images/services/international-student-campus-life-guide.png'
 
 const featuredCourses = [
-  { id:1, title:'Spring Boot MSA 완성', category:'백엔드',    instructor:'김강사', price:'₩89,000', thumbSrc: springImg, thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:2, title:'Vue 3 실전 프로젝트',  category:'프론트엔드', instructor:'이강사', price:'₩69,000', thumbSrc: vueImg,    thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
-  { id:3, title:'Kubernetes 운영 가이드',category:'DevOps',   instructor:'박강사', price:'₩99,000', thumbSrc: k8sImg,    thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:4, title:'Docker 컨테이너 실전', category:'DevOps',    instructor:'정강사', price:'₩79,000', thumbSrc: dockerImg, thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
-  { id:5, title:'Python 데이터 분석',   category:'데이터',    instructor:'최강사', price:'₩59,000', thumbSrc: pythonImg, thumbBg:'thumb-purple', badgeClass:'badge-purple' },
-  { id:6, title:'Generative AI 실전',   category:'AI',        instructor:'한강사', price:'₩75,000', thumbSrc: genaiImg,  thumbBg:'thumb-pink',   badgeClass:'badge-pink'   },
+  { id:1, title:'유학생 병원 업무 보조', category:'의료',    instructor:'', price:'', thumbSrc: springImg, thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
+  { id:2, title:'유학생 금융 업무 보조',  category:'금융', instructor:'', price:'', thumbSrc: vueImg,    thumbBg:'thumb-teal',   badgeClass:'badge-teal'   },
+  { id:3, title:'유학생 행정 업무 보조',category:'행정',   instructor:'', price:'', thumbSrc: k8sImg,    thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
+  { id:4, title:'유학생 강의 번역 서비스', category:'학업',    instructor:'', price:'', thumbSrc: dockerImg, thumbBg:'thumb-blue',   badgeClass:'badge-blue'   },
+  { id:5, title:'강의 노트 정리 보조 서비스',   category:'학업',    instructor:'', price:'', thumbSrc: pythonImg, thumbBg:'thumb-purple', badgeClass:'badge-purple' },
+  { id:6, title:'유학생 학교 생활 안내 서비스',   category:'생활',        instructor:'', price:'', thumbSrc: genaiImg,  thumbBg:'thumb-pink',   badgeClass:'badge-pink'   },
 ]
 
 const features = [
-  { icon:'🚀', title:'실무 중심 커리큘럼', desc:'현업 전문가가 직접 설계한 실무 중심 강의로 빠르게 성장하세요.' },
-  { icon:'🎯', title:'맞춤 강의 추천', desc:'AI 기반 추천 시스템이 수강 이력을 분석해 딱 맞는 강의를 추천합니다.' },
-  { icon:'💳', title:'간편한 수강 신청', desc:'원클릭 결제와 즉시 수강으로 학습을 바로 시작하세요.' },
-  { icon:'📱', title:'언제 어디서나', desc:'PC, 태블릿, 모바일 어디서든 끊김 없이 학습하세요.' },
+  { icon:'🚀', title:'유학생의 신속한 업무 처리', desc:'유학생의 생활을 원활하게 도와주는 업무 보조 서비스를 제공합니다.' },
+  { icon:'🎯', title:'맞춤 서비스 추천', desc:'AI 기반 추천 시스템이 서비스 이용 이력을 분석해 딱 맞는 서비스를 추천합니다.' },
+  { icon:'🍔', title:'간편한 서비스 신청', desc:'원클릭 신청으로 서비스를 바로 제공받으세요.' },
+  { icon:'📱', title:'언제 어디서나', desc:'PC, 태블릿, 모바일 어디서든 끊김 없이 이용하세요.' },
 ]
 </script>
 

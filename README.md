@@ -54,6 +54,8 @@ http://localhost:8761/
 ## 로컬 실행 방법
 cd vue-frontend
 npm install
+에러가 발생할 경우 (버전 에러)
+npm ci
 npm run dev
 
 ## 브라우저에서 접속
