@@ -78,9 +78,9 @@
       <div class="footer-inner">
         <div class="footer-logo">
           <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" />
-          <span>LearnNexus</span>
+          <span>K-mate</span>
         </div>
-        <p class="footer-copy">© 2026 LearnNexus. All rights reserved.</p>
+        <p class="footer-copy">© 2026 K-mate. All rights reserved.</p>
       </div>
     </footer>
   </div>
@@ -292,7 +292,8 @@ const features = computed(() => [
 
 /* 푸터 */
 .footer {
-  background: var(--color-text-primary);
+  background: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border);
   padding: 32px 0;
 }
 .footer-inner {
@@ -307,10 +308,10 @@ const features = computed(() => [
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #fff;
+  color: var(--color-text-primary);
   font-size: 15px;
   font-weight: 600;
 }
 .footer-logo img { width: 28px; height: 28px; border-radius: 6px; }
-.footer-copy { font-size: 13px; color: rgba(255,255,255,0.5); }
+.footer-copy { font-size: 13px; color: var(--color-text-secondary); }
 </style>
