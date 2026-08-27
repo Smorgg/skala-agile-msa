@@ -5,8 +5,8 @@
       <!-- 좌측 브랜딩 -->
       <div class="login-left">
         <div class="brand">
-          <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" class="brand-logo" />
-          <span class="brand-name">LearnNexus</span>
+          <img src="@/assets/images/logo/main_logo.png" alt="K-mate" class="brand-logo" />
+          <span class="brand-name">K-mate</span>
         </div>
         <div class="brand-content">
           <h2>{{ t('welcomeBackLine1') }}<br>{{ t('welcomeBackLine2') }}</h2>

@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="hero-visual fade-in">
-          <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" class="hero-logo" />
+          <img src="@/assets/images/logo/main_logo.png" alt="K-mate" class="hero-logo" />
         </div>
       </div>
     </section>
@@ -77,7 +77,7 @@
     <footer class="footer">
       <div class="footer-inner">
         <div class="footer-logo">
-          <img src="@/assets/images/logo/main_logo.png" alt="LearnNexus" />
+          <img src="@/assets/images/logo/main_logo.png" alt="K-mate" />
           <span>K-mate</span>
         </div>
         <p class="footer-copy">© 2026 K-mate. All rights reserved.</p>
@@ -312,6 +312,11 @@ const features = computed(() => [
   font-size: 15px;
   font-weight: 600;
 }
-.footer-logo img { width: 28px; height: 28px; border-radius: 6px; }
+.footer-logo img {
+  /* 원본 로고의 3:2 비율을 유지해 찌그러짐 없이 표시한다. */
+  width: 42px;
+  height: 28px;
+  border-radius: 6px;
+}
 .footer-copy { font-size: 13px; color: var(--color-text-secondary); }
 </style>
