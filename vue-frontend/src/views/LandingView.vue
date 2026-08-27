@@ -95,17 +95,25 @@ import { useCourseStore } from '@/store/course.js'
 const { t } = useI18n()
 const courseStore = useCourseStore()
 
-// 서비스 목록과 동일한 ID·카테고리 썸네일 매핑을 사용한다.
+// 서비스 목록(CourseListView)과 동일하게, 썸네일 매핑은 번역되지 않은
+// 원본 카테고리 키(categoryKey)를 기준으로 조회하고, 화면 표시용 category만 번역한다.
+// (getThumbnail에 번역된 문자열을 넘기면 매핑 테이블에서 키를 찾지 못해 썸네일이 깨진다.)
+const categoryTranslationKeys = {
+  '의료': 'healthcare', '금융': 'finance', '행정': 'admin',
+  '법률·안전': 'security', '학업': 'academic', '생활': 'life'
+}
+
 const featuredCourses = computed(() => [
-  { id:1, title:t('landingServiceHospital'), category:t('healthcare'), instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-teal' },
-  { id:2, title:t('landingServiceFinance'), category:t('finance'), instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-amber' },
-  { id:3, title:t('landingServiceAdmin'), category:t('admin'), instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-blue' },
-  { id:4, title:t('landingServiceTranslation'), category:t('academic'), instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-purple' },
-  { id:5, title:t('landingServiceNotes'), category:t('academic'), instructor:'', price:'', thumbBg:'thumb-purple', badgeClass:'badge-purple' },
-  { id:6, title:t('landingServiceCampus'), category:t('life'), instructor:'', price:'', thumbBg:'thumb-pink', badgeClass:'badge-pink' }
+  { id:1, title:t('landingServiceHospital'), categoryKey:'의료', instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-teal' },
+  { id:2, title:t('landingServiceFinance'), categoryKey:'금융', instructor:'', price:'', thumbBg:'thumb-teal', badgeClass:'badge-amber' },
+  { id:3, title:t('landingServiceAdmin'), categoryKey:'행정', instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-blue' },
+  { id:4, title:t('landingServiceTranslation'), categoryKey:'학업', instructor:'', price:'', thumbBg:'thumb-blue', badgeClass:'badge-purple' },
+  { id:5, title:t('landingServiceNotes'), categoryKey:'학업', instructor:'', price:'', thumbBg:'thumb-purple', badgeClass:'badge-purple' },
+  { id:6, title:t('landingServiceCampus'), categoryKey:'생활', instructor:'', price:'', thumbBg:'thumb-pink', badgeClass:'badge-pink' }
 ].map(course => ({
   ...course,
-  thumbSrc: courseStore.getThumbnail(course)
+  category: t(categoryTranslationKeys[course.categoryKey] || course.categoryKey),
+  thumbSrc: courseStore.getThumbnail({ ...course, category: course.categoryKey })
 })))
 
 const features = computed(() => [

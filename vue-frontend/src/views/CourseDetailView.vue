@@ -7,15 +7,21 @@
         <div class="detail-hero-inner">
           <!-- 좌측 상세 정보 -->
           <div class="detail-info fade-in-up">
-            <h1 class="detail-title">{{ course.title }}</h1>
+            <h1 class="detail-title">{{ displayTitle }}</h1>
             <span class="badge" :class="badgeClass">{{ displayCategory }}</span>
             <p class="detail-desc">
-              {{ course.description || t('defaultServiceDescription') }}
+              {{ displayDescription }}
             </p>
 
             <div class="detail-meta">
               <span>{{ t('department') }}: {{ displayInstructorName }}</span>
               <span>{{ t('applicants') }}: {{ t('peopleUnit', { count: displayEnrollmentCount }) }}</span>
+            </div>
+
+            <!-- 서비스 소개 미리보기 이미지 영역. 실제 이미지가 준비되기 전까지 안내 문구를 표시한다. -->
+            <div class="preview-card">
+              <span class="preview-icon">🖼️</span>
+              <span class="preview-text">{{ t('imagePreparing') }}</span>
             </div>
           </div>
 
@@ -78,7 +84,7 @@ const route = useRoute()
 const router = useRouter()
 const courseStore = useCourseStore()
 const auth = useAuthStore()
-const { t } = useI18n()
+const { t, translateCourseTitle, translateCourseDescription } = useI18n()
 
 const enrolling = ref(false)
 const enrollError = ref('')
@@ -113,6 +119,19 @@ const categoryTranslationKeys = {
 const displayCategory = computed(() => {
   const category = course.value?.category
   return category ? t(categoryTranslationKeys[category] || category) : '-'
+})
+
+const displayTitle = computed(() => {
+  if (!course.value) return ''
+  // 헤더의 언어 선택(LanguageSwitcher)에 따라 자동으로 번역된 제목을 보여준다.
+  return translateCourseTitle(course.value.id, course.value.title)
+})
+
+const displayDescription = computed(() => {
+  const fallback = course.value?.description || t('defaultServiceDescription')
+  if (!course.value) return fallback
+  // 헤더의 언어 선택(LanguageSwitcher)에 따라 자동으로 번역된 설명을 보여준다.
+  return translateCourseDescription(course.value.id, fallback)
 })
 
 const displayInstructorName = computed(() => {
@@ -294,6 +313,30 @@ watch(
   font-size: 15px;
   color: var(--color-text-secondary);
   line-height: 1.7;
+}
+
+/* 서비스 소개 미리보기 이미지 카드. 이미지 준비 전까지 자리표시자를 보여준다.
+   히어로 섹션의 그라데이션 배경과 상관없이 불투명한 카드로 떠 보이게 한다. */
+.preview-card {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-muted);
+}
+.preview-icon {
+  font-size: 40px;
+  opacity: 0.6;
+}
+.preview-text {
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .detail-meta {
