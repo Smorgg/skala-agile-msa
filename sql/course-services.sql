@@ -67,6 +67,57 @@ ON DUPLICATE KEY UPDATE
 
 COMMIT;
 
+-- 데이터 삭제
+START TRANSACTION;
+
+DELETE FROM payments;
+DELETE FROM enrollments;
+DELETE FROM courses;
+
+SELECT COUNT(*) FROM courses;
+
+COMMIT;
+
+
+-- 저장 결과 확인
+SELECT id, title, category, price, instructor_id, status
+FROM courses
+WHERE id BETWEEN 1 AND 28
+ORDER BY id;
+
+
+-- 테스트 화면 용 데이터 등록
+START TRANSACTION;
+
+INSERT INTO courses (
+    id,
+    title,
+    description,
+    category,
+    price,
+    instructor_id,
+    enrollment_count,
+    status,
+    created_at,
+    updated_at
+) VALUES
+(1, 'AI 증상 분석 및 진료과 추천', '입력한 증상과 불편한 부위를 AI가 분석하여 방문하기 적합한 진료과를 안내합니다. 응급 징후가 의심되면 즉시 이용할 수 있는 긴급 연락처와 대응 방법도 함께 제공합니다.', 'HEALTHCARE', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6)),
+(2, '계좌 개설 절차 및 필요서류 안내', '외국인 유학생의 국내 은행 계좌 개설 절차와 필요한 신분증 및 증빙서류를 안내합니다. 은행 방문 전 준비사항과 계좌 개설 시 유의점도 제공합니다.', 'FINANCE', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6)),
+(3, '비자 발급·연장 및 외국인등록 안내', '비자 발급과 체류기간 연장, 외국인등록에 필요한 절차와 서류를 안내합니다. 현재 체류자격에 맞는 신청 장소와 처리 순서도 제공합니다.', 'ADMIN', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6)),
+(4, '임대차 계약서 AI 위험 분석', '임대차 계약서 내용을 AI가 분석하여 보증금, 계약기간, 위약금 등 주의해야 할 조항을 알려줍니다. 확인이 필요한 위험 요소를 쉬운 표현으로 정리합니다.', 'SECURITY', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6)),
+(5, '강의 실시간 자막 및 다국어 번역', '강의 음성을 실시간 자막으로 변환하고 선택한 언어로 번역합니다. 수업 중 중요한 내용을 놓치지 않도록 원문과 번역문을 함께 제공합니다.', 'ACADEMIC', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6)),
+(6, 'AI 강의 요약 및 핵심 내용 정리', '강의 자료와 수업 내용을 AI가 분석하여 핵심 개념과 주요 논점을 요약합니다. 복습에 활용할 수 있도록 주제별 학습 노트 형식으로 정리합니다.', 'ACADEMIC', 0.00, 2, 0, 'ACTIVE', NOW(6), NOW(6))
+ON DUPLICATE KEY UPDATE
+    title = VALUES(title),
+    description = VALUES(description),
+    category = VALUES(category),
+    price = VALUES(price),
+    instructor_id = VALUES(instructor_id),
+    status = VALUES(status),
+    updated_at = NOW(6);
+
+COMMIT;
+
 -- 저장 결과 확인
 SELECT id, title, category, price, instructor_id, status
 FROM courses
